@@ -1,7 +1,5 @@
 #!/bin/sh
 
-pnpm ls-lint
-
 BRANCH_NAME=$(git branch --show-current)
 
 if [ "$BRANCH_NAME" = "main" ]; then

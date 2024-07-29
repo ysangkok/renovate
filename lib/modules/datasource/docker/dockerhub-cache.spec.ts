@@ -100,7 +100,7 @@ describe('modules/datasource/docker/dockerhub-cache', () => {
     const cache = await DockerHubCache.init(dockerRepository);
     const newItems: DockerHubTag[] = [newItem()];
 
-    const needNextPage = cache.reconcile(newItems);
+    const needNextPage = cache.reconcile(newItems, newItems.length);
 
     expect(needNextPage).toBe(true);
     expect(cache).toEqual({
@@ -128,7 +128,7 @@ describe('modules/datasource/docker/dockerhub-cache', () => {
     const cache = await DockerHubCache.init(dockerRepository);
     const items: DockerHubTag[] = Object.values(oldCache.items);
 
-    const needNextPage = cache.reconcile(items);
+    const needNextPage = cache.reconcile(items, items.length);
 
     expect(needNextPage).toBe(false);
     expect(cache).toEqual({
@@ -154,7 +154,7 @@ describe('modules/datasource/docker/dockerhub-cache', () => {
     };
     const cache = await DockerHubCache.init(dockerRepository);
 
-    const needNextPage = cache.reconcile([item]);
+    const needNextPage = cache.reconcile([item], 1);
     expect(needNextPage).toBe(true);
     expect(cache).toEqual({
       cache: expectedCache,

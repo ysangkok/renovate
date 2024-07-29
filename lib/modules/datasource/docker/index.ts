@@ -988,9 +988,9 @@ export class DockerDatasource extends Datasource {
         return null;
       }
 
-      const { results, next } = val;
+      const { count, results, next } = val;
 
-      needNextPage = cache.reconcile(results);
+      needNextPage = cache.reconcile(results, count);
 
       if (!next) {
         break;

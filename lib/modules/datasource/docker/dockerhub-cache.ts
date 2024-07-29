@@ -1,5 +1,6 @@
 import { dequal } from 'dequal';
 import { DateTime } from 'luxon';
+import { logger } from '../../../logger';
 import * as packageCache from '../../../util/cache/package';
 import type { DockerHubTag } from './schema';
 
@@ -32,7 +33,7 @@ export class DockerHubCache {
     return new DockerHubCache(dockerRepository, repoCache);
   }
 
-  reconcile(items: DockerHubTag[]): boolean {
+  reconcile(items: DockerHubTag[], expectedCount: number): boolean {
     let needNextPage = true;
 
     let { updatedAt } = this.cache;
@@ -58,6 +59,15 @@ export class DockerHubCache {
     }
 
     this.cache.updatedAt = updatedAt;
+    if (!needNextPage) {
+      const cacheCount = Object.keys(this.cache.items).length;
+      if (cacheCount !== expectedCount) {
+        logger.warn(
+          { cacheCount, expectedCount },
+          'Docker Hub tags cache count mismatch',
+        );
+      }
+    }
     return needNextPage;
   }
 

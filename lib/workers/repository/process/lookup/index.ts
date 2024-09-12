@@ -361,13 +361,15 @@ export async function lookupUpdates(
       }
       // Filter latest, unstable, etc
       // TODO #22198
+      let candidateVersions =
+        config.rangeStrategy === 'in-range-only'
+          ? allSatisfyingVersions
+          : allVersions;
       let filteredReleases = filterVersions(
         config,
         currentVersion!,
         latestVersion!,
-        config.rangeStrategy === 'in-range-only'
-          ? allSatisfyingVersions
-          : allVersions,
+        candidateVersions,
         versioningApi,
       ).filter(
         (v) =>
@@ -375,6 +377,9 @@ export async function lookupUpdates(
           unconstrainedValue ||
           versioningApi.isCompatible(v.version, compareValue),
       );
+      if (filteredReleases.length === 0) {
+        logger.debug ( {versioning: config.versioning, candidateVersions, compareValue}, 'No releases left after filtering out the incompatible');
+      }
       let shrinkedViaVulnerability = false;
       if (config.isVulnerabilityAlert) {
         if (config.vulnerabilityFixVersion) {
